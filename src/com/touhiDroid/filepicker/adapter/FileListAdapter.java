@@ -73,7 +73,7 @@ public class FileListAdapter extends ArrayAdapter<FileRow> {
 			vHolder.ivFileImg.setImageBitmap(bmp);
 		}else{
 			Bitmap bmp = BitmapFactory.decodeResource(tContext.getResources(),
-					R.drawable.ic_launcher);
+					R.drawable.folder_icon);
 			vHolder.ivFileImg.setImageBitmap(bmp);
 		}
 		// Log.d(tag, fRow.toString());
