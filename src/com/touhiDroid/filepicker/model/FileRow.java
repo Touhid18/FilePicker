@@ -3,11 +3,10 @@
  */
 package com.touhiDroid.filepicker.model;
 
-import com.touhiDroid.filepicker.R;
+import java.io.File;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.util.Log;
 
 /**
  * @author Touhid
@@ -15,33 +14,33 @@ import android.graphics.BitmapFactory;
  */
 public class FileRow {
 
+	private final String tag = "FileRow";
+
 	private String fileName, fileDescription;
-	private Bitmap filePic;
+	private File file;
 
 	/**
-	 * File name & file description field will be set to "<Not Found>", while
-	 * file picture will be null when this constructor is called.
+	 * File name & file description field will be set to "<Not Found>"
 	 */
 	public FileRow() {
 		fileName = fileDescription = "<Not Found>";
-		filePic = null;
+		file = null;
 	}
 
-	/**
-	 * The explicit constructor for a file-row taking its 3 parameters.
-	 * 
-	 * @param fileName
-	 *            Main file name
-	 * @param fileDescription
-	 *            If file, then its size in KB or if folder, then the number of
-	 *            files inside it
-	 * @param filePic
-	 *            File image according to its type.
-	 * */
-	public FileRow(String fileName, String fileDescription, Bitmap filePic) {
-		this.fileName = fileName;
-		this.fileDescription = fileDescription;
-		this.filePic = filePic;
+	public FileRow(Context context, File f) {
+		this.file = f;
+		this.fileName = f.getName();
+		if (f.isFile()) {
+			double sz = (double) (f.length() / 1024L);
+			if (sz < 1024)
+				this.fileDescription = (sz) + " KB";
+			else
+				this.fileDescription = (sz / 1024) + " MB";
+			Log.d(tag, "Got file: " + fileName);
+		} else if (f.isDirectory())
+			this.fileDescription = "no. of files";
+		// f.listFiles().length + " files";
+
 	}
 
 	/**
@@ -53,9 +52,10 @@ public class FileRow {
 	 *            If file, then its size in KB or if folder, then the number of
 	 *            files inside it
 	 * */
-	public FileRow(String fileName, String fileDescription) {
+	public FileRow(String fileName, String fileDescription, File file) {
 		this.fileName = fileName;
 		this.fileDescription = fileDescription;
+		this.file = file;
 	}
 
 	/**
@@ -71,11 +71,11 @@ public class FileRow {
 	 *            If file, then its size in KB or if folder, then the number of
 	 *            files inside it
 	 */
-	public FileRow(Context context, String fileName, String fileDescription) {
+	public FileRow(Context context, String fileName, String fileDescription,
+			File file) {
 		this.fileName = fileName;
 		this.fileDescription = fileDescription;
-		this.filePic = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.ic_launcher);
+		this.file = file;
 	}
 
 	/**
@@ -109,25 +109,23 @@ public class FileRow {
 	}
 
 	/**
-	 * @return the filePic
+	 * @return the file
 	 */
-	public Bitmap getFilePic() {
-		return filePic;
+	public File getFile() {
+		return file;
 	}
 
 	/**
-	 * @param filePic
-	 *            the filePic to set
+	 * @param file
+	 *            the file to set
 	 */
-	public void setFilePic(Bitmap filePic) {
-		this.filePic = filePic;
+	public void setFile(File file) {
+		this.file = file;
 	}
 
 	@Override
 	public String toString() {
 		return "File Name: " + fileName + ", File Description: "
-				+ fileDescription + ", Bitmap: "
-				+ (filePic == null ? "Doesn't exist." : "Exists.");
+				+ fileDescription;
 	}
-
 }

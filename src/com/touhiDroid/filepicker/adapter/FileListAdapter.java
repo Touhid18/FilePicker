@@ -3,11 +3,13 @@
  */
 package com.touhiDroid.filepicker.adapter;
 
+import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +44,7 @@ public class FileListAdapter extends ArrayAdapter<FileRow> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Log.d(tag, "getView() : position=" + position);
+		// Log.d(tag, "getView() : position=" + position);
 		ViewHolder vHolder = null;
 
 		LayoutInflater lInflater = (LayoutInflater) tContext
@@ -56,16 +58,21 @@ public class FileListAdapter extends ArrayAdapter<FileRow> {
 					.findViewById(R.id.tv_file_desc);
 			vHolder.ivFileImg = (ImageView) convertView
 					.findViewById(R.id.iv_file_pic);
-
-			FileRow fRow = getItem(position);
-			vHolder.tvFileName.setText(fRow.getFileName());
-			vHolder.tvFileDesc.setText(fRow.getFileDescription());
-			Bitmap bmp = fRow.getFilePic();
-			if (bmp != null)
-				vHolder.ivFileImg.setImageBitmap(bmp);
-			Log.d(tag, fRow.toString());
 		} else
 			vHolder = (ViewHolder) convertView.getTag();
+
+		FileRow fRow = getItem(position);
+		vHolder.tvFileName.setText(fRow.getFileName());
+		String fDesc = fRow.getFileDescription();
+		vHolder.tvFileDesc.setText(fDesc);
+		File f = fRow.getFile();
+		if (f.isFile() && !f.isDirectory() && !fDesc.equals("no. of files")) {
+			Bitmap bmp = BitmapFactory.decodeResource(tContext.getResources(),
+					R.drawable.apk);
+			vHolder.ivFileImg.setImageBitmap(bmp);
+		}
+		convertView.setTag(vHolder);
+		// Log.d(tag, fRow.toString());
 
 		return convertView;
 	}
