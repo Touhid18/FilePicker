@@ -58,6 +58,7 @@ public class FileListAdapter extends ArrayAdapter<FileRow> {
 					.findViewById(R.id.tv_file_desc);
 			vHolder.ivFileImg = (ImageView) convertView
 					.findViewById(R.id.iv_file_pic);
+			convertView.setTag(vHolder);
 		} else
 			vHolder = (ViewHolder) convertView.getTag();
 
@@ -70,8 +71,11 @@ public class FileListAdapter extends ArrayAdapter<FileRow> {
 			Bitmap bmp = BitmapFactory.decodeResource(tContext.getResources(),
 					R.drawable.apk);
 			vHolder.ivFileImg.setImageBitmap(bmp);
+		}else{
+			Bitmap bmp = BitmapFactory.decodeResource(tContext.getResources(),
+					R.drawable.ic_launcher);
+			vHolder.ivFileImg.setImageBitmap(bmp);
 		}
-		convertView.setTag(vHolder);
 		// Log.d(tag, fRow.toString());
 
 		return convertView;

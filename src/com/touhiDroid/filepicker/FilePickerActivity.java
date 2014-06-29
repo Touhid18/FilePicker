@@ -1,14 +1,20 @@
 package com.touhiDroid.filepicker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -21,7 +27,15 @@ import android.widget.ListView;
 import com.touhiDroid.filepicker.adapter.FileListAdapter;
 import com.touhiDroid.filepicker.model.FileRow;
 
+@SuppressLint("DefaultLocale")
 public class FilePickerActivity extends Activity {
+
+	public static final int PDF_FILE = 1001;
+	public static final int IMAGE_FILE = 1002;
+	public static final int PASSBOOK_FILE = 1003;
+
+	public static final String FILE_FORMAT_KEY = "file_format_key_touhiDoid";
+	public static final String FILE_BYTE_ARRAY_KEY = "file_byte_array_key_touhiDoid";
 
 	private final String tag = "FilePickerActivity";
 
@@ -39,13 +53,13 @@ public class FilePickerActivity extends Activity {
 			"pkpass", "zip", "7z", "apk", "jar", "war", "bz", "tar", "bz2",
 			"bzip2", "wim", "xz" };
 	private String[] appFileFormats = { "pdf", "jpg", "jpeg", "png", "bmp",
-			"psd", "ai", "gif", "pkpass",
-			// TODO REMOVE TEST Formats
-			"txt", "apk" };
+			"psd", "ai", "gif", "pkpass" };
 
-	private ListView lvFileList;
-	private ArrayList<FileRow> fileList;
-	private ArrayAdapter<FileRow> adapterFileList;
+	private String curFilePath;
+
+	private static ListView lvFileList;
+	private static ArrayList<FileRow> fileList;
+	private static ArrayAdapter<FileRow> adapterFileList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,19 +86,60 @@ public class FilePickerActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO
-				// File f = fileList.get(position).getFile();
-				// if (f.isDirectory()) {
-				// fileList = getAllFileList(f.getAbsolutePath());
-				// adapterFileList.notifyDataSetChanged();
-				// } else {
-				//
-				// }
+				File f = ((FileRow) parent.getItemAtPosition(position))
+						.getFile();
+				Log.d(tag, f.getName() + ", position:" + position);
+				if (f.isDirectory()) {
+					fileList.clear();
+					fileList.addAll(getAllFileList(f.getAbsolutePath()));
+					Log.d(tag, "New list loaded with size=" + fileList.size());
+					adapterFileList.notifyDataSetChanged();
+				} else if (f.isFile()) {
+					Intent data = new Intent();
+					data.putExtra(FILE_BYTE_ARRAY_KEY, getFileByteArray(f));
+					data.putExtra(FILE_FORMAT_KEY,
+							getFileFormatKey(f.getName()));
+					setResult(RESULT_OK, data);
+					finish();
+				}
 			}
 
 		});
 	}
 
+	private byte[] getFileByteArray(File f) {
+		byte[] byteArray = null;
+		try {
+			InputStream inputStream = new FileInputStream(f);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			byte[] b = new byte[1024 * 8];
+			int bytesRead = 0;
+
+			while ((bytesRead = inputStream.read(b)) != -1) {
+				bos.write(b, 0, bytesRead);
+			}
+			inputStream.close();
+			byteArray = bos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return byteArray;
+	}
+
+	private int getFileFormatKey(String fileName) {
+		String filenameArray[] = fileName.split("\\.");
+		String extension = filenameArray[filenameArray.length - 1]
+				.toLowerCase();
+		if (extension.equals("pdf"))
+			return PDF_FILE;
+		else if (extension.equals("pkpass"))
+			return PASSBOOK_FILE;
+		else
+			return IMAGE_FILE;
+	}
+
 	private ArrayList<FileRow> getAllFileList(String absFilePath) {
+		curFilePath = absFilePath;
 		File rootFile = new File(absFilePath);
 		File[] rootFiles = rootFile.listFiles();
 		Log.d(tag, "getAllFileList : path = " + absFilePath
@@ -95,12 +150,13 @@ public class FilePickerActivity extends Activity {
 
 		for (File f : rootFiles) {
 			// TODO
+			Log.d(tag, "getAllFileList : Verifying: " + f.getName());
 			if (f.isDirectory()) {
 				dirList.add(new FileRow(FilePickerActivity.this, f));
-				Log.d(tag, "Directory: " + f.getName());
+				Log.d(tag, "getAllFileList : Directory: " + f.getName());
 			} else if (f.isFile() && isFileFormatAc(f.getName())) {
 				dirFileList.add(new FileRow(FilePickerActivity.this, f));
-				Log.d(tag, "File: " + f.getName());
+				Log.d(tag, "getAllFileList : File: " + f.getName());
 			}
 		}
 		Collections.sort(dirList, new Comparator<FileRow>() {
@@ -116,6 +172,9 @@ public class FilePickerActivity extends Activity {
 			}
 		});
 		dirList.addAll(dirFileList);
+		Log.d(tag,
+				"getAllFileList : New list created with size: "
+						+ dirList.size());
 		return dirList;
 	}
 
@@ -152,5 +211,23 @@ public class FilePickerActivity extends Activity {
 		if (status.equals(Environment.MEDIA_MOUNTED))
 			return true;
 		return false;
+	}
+
+	@Override
+	public void onBackPressed() {
+		fileList.clear();
+		File f = new File(curFilePath);
+		String fPath = f.getParent();
+		if (fPath.equals(null)
+				|| curFilePath.equals(Environment.getExternalStorageDirectory()
+						.getAbsolutePath())) {
+			super.onBackPressed();
+			return;
+		} else {
+			fileList.addAll(getAllFileList(fPath));
+			Log.d(tag, "New list loaded with size=" + fileList.size());
+			adapterFileList.notifyDataSetChanged();
+		}
+
 	}
 }
