@@ -35,6 +35,7 @@ public class FilePickerActivity extends Activity {
 	public static final int PASSBOOK_FILE = 1003;
 
 	public static final String FILE_FORMAT_KEY = "file_format_key_touhiDoid";
+	public static final String FILE_PATH = "file_path_touhiDoid";
 	public static final String FILE_BYTE_ARRAY_KEY = "file_byte_array_key_touhiDoid";
 
 	private final String tag = "FilePickerActivity";
@@ -97,6 +98,7 @@ public class FilePickerActivity extends Activity {
 				} else if (f.isFile()) {
 					Intent data = new Intent();
 					data.putExtra(FILE_BYTE_ARRAY_KEY, getFileByteArray(f));
+					data.putExtra(FILE_PATH, f.getAbsolutePath());
 					data.putExtra(FILE_FORMAT_KEY,
 							getFileFormatKey(f.getName()));
 					setResult(RESULT_OK, data);
