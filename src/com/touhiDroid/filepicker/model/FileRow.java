@@ -20,13 +20,23 @@ public class FileRow {
 	private File file;
 
 	/**
-	 * File name & file description field will be set to "<Not Found>"
+	 * File name & file description field will be set to "<Not Found>", while
+	 * file field will be null
 	 */
 	public FileRow() {
 		fileName = fileDescription = "<Not Found>";
 		file = null;
 	}
 
+	/**
+	 * Constructor with the explicit file parameter.
+	 * 
+	 * @param context
+	 *            Working context to do nothing actually. It's permitted to send
+	 *            null value.
+	 * @param f
+	 *            The file to create the object.
+	 */
 	public FileRow(Context context, File f) {
 		this.file = f;
 		this.fileName = f.getName();
@@ -123,6 +133,12 @@ public class FileRow {
 		this.file = file;
 	}
 
+	/**
+	 * Returns a string formatted as "File Name: " + fileName + ", File
+	 * Description: " + fileDescription
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "File Name: " + fileName + ", File Description: "

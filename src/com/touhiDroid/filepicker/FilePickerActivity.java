@@ -23,11 +23,32 @@ import android.widget.ListView;
 import com.touhiDroid.filepicker.adapter.FileListAdapter;
 import com.touhiDroid.filepicker.model.FileRow;
 
+/**
+ * Main file picker activity which shows the file list in the SD card, proceedes
+ * with folder navigations along with the back button pressing mechanism &
+ * finally returns back the selected file path. <br>
+ * This file provides the necessary constants as public static fields to check
+ * the returned values. These constants are:
+ * {@code FILE_FORMAT_KEY, FILE_PATH, PDF_FILE, IMAGE_FILE & PASSBOOK_FILE}
+ * 
+ * @author Touhid
+ * 
+ */
 @SuppressLint("DefaultLocale")
 public class FilePickerActivity extends Activity {
 
+	/**
+	 * Constant field to check whether the selected file is a PDF or not.
+	 */
 	public static final int PDF_FILE = 1001;
+	/**
+	 * Constant field to check whether the selected file is an image (as
+	 * {@code jpg, jpeg, png, bmp, gif, ai & psd} ) or not.
+	 */
 	public static final int IMAGE_FILE = 1002;
+	/**
+	 * Constant field to check whether the selected file is a PDF or not.
+	 */
 	public static final int PASSBOOK_FILE = 1003;
 
 	public static final String FILE_FORMAT_KEY = "file_format_key_touhiDoid";
@@ -50,6 +71,11 @@ public class FilePickerActivity extends Activity {
 			// Compressed file formats
 			"pkpass", "zip", "7z", "apk", "jar", "war", "bz", "tar", "bz2",
 			"bzip2", "wim", "xz" };
+	/**
+	 * Contains a list of checked file types. If not passed through the calling
+	 * intent, then constant file formats are:
+	 * {@code pdf, jpg, jpeg, png, bmp, gif, ai, psd & pkpass}
+	 */
 	private String[] appFileFormats = { "pdf", "jpg", "jpeg", "png", "bmp",
 			"psd", "ai", "gif", "pkpass" };
 
@@ -69,7 +95,7 @@ public class FilePickerActivity extends Activity {
 		}
 		// initialize views
 		lvFileList = (ListView) findViewById(R.id.lv_files);
-		fileList = new ArrayList<>();
+		fileList = new ArrayList<FileRow>();
 
 		// List SD card files
 		File sdCard = Environment.getExternalStorageDirectory();
@@ -126,6 +152,7 @@ public class FilePickerActivity extends Activity {
 	// return byteArray;
 	// }
 
+	@SuppressLint("DefaultLocale")
 	private int getFileFormatKey(String fileName) {
 		String filenameArray[] = fileName.split("\\.");
 		String extension = filenameArray[filenameArray.length - 1]
@@ -145,8 +172,8 @@ public class FilePickerActivity extends Activity {
 		Log.d(tag, "getAllFileList : path = " + absFilePath
 				+ ", no. of files: " + rootFiles.length);
 
-		ArrayList<FileRow> dirList = new ArrayList<>();
-		ArrayList<FileRow> dirFileList = new ArrayList<>();
+		ArrayList<FileRow> dirList = new ArrayList<FileRow>();
+		ArrayList<FileRow> dirFileList = new ArrayList<FileRow>();
 
 		for (File f : rootFiles) {
 			// TODO
@@ -178,6 +205,10 @@ public class FilePickerActivity extends Activity {
 		return dirList;
 	}
 
+	/**
+	 * @param fileName
+	 * @return true, if the file
+	 */
 	private boolean isFileFormatAc(String fileName) {
 		String filenameArray[] = fileName.split("\\.");
 		String extension = filenameArray[filenameArray.length - 1];
