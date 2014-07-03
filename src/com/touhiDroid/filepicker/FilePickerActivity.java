@@ -1,10 +1,6 @@
 package com.touhiDroid.filepicker;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,7 +32,8 @@ public class FilePickerActivity extends Activity {
 
 	public static final String FILE_FORMAT_KEY = "file_format_key_touhiDoid";
 	public static final String FILE_PATH = "file_path_touhiDoid";
-	public static final String FILE_BYTE_ARRAY_KEY = "file_byte_array_key_touhiDoid";
+	// public static final String FILE_BYTE_ARRAY_KEY =
+	// "file_byte_array_key_touhiDoid";
 
 	private final String tag = "FilePickerActivity";
 
@@ -96,37 +93,38 @@ public class FilePickerActivity extends Activity {
 					Log.d(tag, "New list loaded with size=" + fileList.size());
 					adapterFileList.notifyDataSetChanged();
 				} else if (f.isFile()) {
+					Log.d(tag, "File got: " + f.getName());
 					Intent data = new Intent();
-					data.putExtra(FILE_BYTE_ARRAY_KEY, getFileByteArray(f));
 					data.putExtra(FILE_PATH, f.getAbsolutePath());
 					data.putExtra(FILE_FORMAT_KEY,
 							getFileFormatKey(f.getName()));
 					setResult(RESULT_OK, data);
 					finish();
+					return;
 				}
 			}
 
 		});
 	}
 
-	private byte[] getFileByteArray(File f) {
-		byte[] byteArray = null;
-		try {
-			InputStream inputStream = new FileInputStream(f);
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] b = new byte[1024 * 8];
-			int bytesRead = 0;
-
-			while ((bytesRead = inputStream.read(b)) != -1) {
-				bos.write(b, 0, bytesRead);
-			}
-			inputStream.close();
-			byteArray = bos.toByteArray();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return byteArray;
-	}
+	// private byte[] getFileByteArray(File f) {
+	// byte[] byteArray = null;
+	// try {
+	// InputStream inputStream = new FileInputStream(f);
+	// ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	// byte[] b = new byte[1024 * 8];
+	// int bytesRead = 0;
+	//
+	// while ((bytesRead = inputStream.read(b)) != -1) {
+	// bos.write(b, 0, bytesRead);
+	// }
+	// inputStream.close();
+	// byteArray = bos.toByteArray();
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// return byteArray;
+	// }
 
 	private int getFileFormatKey(String fileName) {
 		String filenameArray[] = fileName.split("\\.");
