@@ -21,6 +21,32 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" >
+                </category>
+            </intent-filter>
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.VIEW" >
+                </action>
+
+                <category android:name="android.intent.category.BROWSABLE" >
+                </category>
+                <category android:name="android.intent.category.DEFAULT" >
+                </category>
+
+                <data android:mimeType="*/*" />
+                
+                <data
+                    android:mimeType="application/pkpass"
+                    android:scheme="file" >
+                </data>
+                <data
+                    android:mimeType="application/vnd.apple.pkpass"
+                    android:scheme="file" >
+                </data>
+                <data
+                    android:mimeType="application/vnd-com.apple.pkpass"
+                    android:scheme="file" >
+                </data>
             </intent-filter>
         </activity>
     </application>

@@ -24,7 +24,7 @@ import com.touhiDroid.filepicker.adapter.FileListAdapter;
 import com.touhiDroid.filepicker.model.FileRow;
 
 /**
- * Main file picker activity which shows the file list in the SD card, proceedes
+ * Main file picker activity which shows the file list in the SD card, proceeds
  * with folder navigations along with the back button pressing mechanism &
  * finally returns back the selected file path. <br>
  * This file provides the necessary constants as public static fields to check
